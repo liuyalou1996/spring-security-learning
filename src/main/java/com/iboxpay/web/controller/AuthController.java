@@ -8,16 +8,12 @@ public class AuthController {
 
   @RequestMapping("/loginProcess")
   public String handelRequest(String error, String logout) {
-    // 认证失败重新跳转到登录页面
-    if (error != null) {
-      return "login";
-    }
-
     // 如果是退出登录，则跳转到退出登录后的页面
     if (logout != null) {
       return "logout";
     }
 
-    return "success";
+    // 认证、授权失败或者直接访问该地址跳回到登录页面
+    return "login";
   }
 }

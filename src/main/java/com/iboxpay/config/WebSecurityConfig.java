@@ -2,6 +2,7 @@ package com.iboxpay.config;
 
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,9 +11,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.alibaba.druid.pool.DruidDataSource;
+
 @EnableWebSecurity
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+  @Autowired
+  private DruidDataSource dataSource;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
@@ -26,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .loginProcessingUrl("/loginProcess")// 指定认证处理的url，表单action指定地址必须为该地址，默认为/login
           .defaultSuccessUrl("/success")// 认证成功后默认跳转的地址，默认为/home
           .failureUrl("/loginProcess?error")// 认证失败后跳转的地址，默认为/login?error
-          .permitAll()// 给用户所有与表单登录相关的url访问授权
+          .permitAll()// 授权所有与表单登录相关的url
         .and()
           .rememberMe()// 开启记住我的功能
           .rememberMeCookieName("remember-me")// 传给浏览器的cookie名，默认为remember-me
@@ -47,9 +53,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     // 创建DelegatingPasswordEncoder，该PasswordEncoder会使用BCryptPasswordEncoder对密码进行编码
     PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    String encodedPwd = encoder.encode("123");
-    // 传入的密码不能为原密码，必须经过编码，编码后的格式为{编码器Id}+编码后的密码
-    auth.inMemoryAuthentication().withUser("lyl").password(encodedPwd).roles("USER");
+    // String encodedPwd = encoder.encode("123");
+    // 前端传入的密码编码后与加密后的密码比对，编码后的格式为{编码器Id}+编码后的密码
+    // auth.inMemoryAuthentication().withUser("lyl").password(encodedPwd).roles("USER");
+    auth.jdbcAuthentication().dataSource(dataSource).passwordEncoder(encoder);
   }
 
   /**
