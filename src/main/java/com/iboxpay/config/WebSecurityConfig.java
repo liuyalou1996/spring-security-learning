@@ -64,8 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
    */
   // @Bean
   // public UserDetailsService userDetailsService() {
-  // String encodedPwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("123");
-  // UserDetails userDetails = User.withUsername("lyl").password(encodedPwd).roles("USER").build();
-  // return new InMemoryUserDetailsManager(userDetails);
+  // return new JdbcUserDetailsManager(dataSource);
   // }
+
 }
