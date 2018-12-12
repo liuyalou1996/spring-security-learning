@@ -23,7 +23,6 @@ import com.alibaba.druid.pool.DruidDataSource;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-  @Order(2)
   @Configuration
   public static class FormLoginWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -33,7 +32,7 @@ public class WebSecurityConfig {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
       http.authorizeRequests()// 限制基于HttpServletReqeuest的请求访问
-            .antMatchers("/", "/home").permitAll()// /和/home路径能被任何人访问
+            .antMatchers("/","/home").permitAll()// /和/home路径能被任何人访问
             .anyRequest().authenticated()// 其它请求需要身份认证
             .anyRequest().hasRole("USER")// 其它请求必须是USER角色，该方法默认会加上ROLE_前缀
           .and()
@@ -71,7 +70,10 @@ public class WebSecurityConfig {
     }
 
   }
-
+  
+  /**
+   * 多个HttpSecurity配置登录方式优先级高的生效，优先级低的不生效
+   */
   @Order(1)
   @Configuration
   public static class OAuth2WebSecurityConfig extends WebSecurityConfigurerAdapter {
